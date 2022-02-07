@@ -19,4 +19,9 @@ Out_r, Out_c = MatrixExp(A_r, A_c)
 
 The code is an adaptation of the implementation of the `expm` function in Scipy.
 
+# Notes
+* U and V from lines 18 and 19 in the Algorithm is given by the function *pade13_scaled*. Put A = A_r + iA_c in the equations of U and V to get the implementation in the code.
+* The preprocessing steps have been omitted. Will be added in the future.
+
+
 

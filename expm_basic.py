@@ -16,8 +16,7 @@ class _ExpmPadeHelper(object):
         self._A4_c = torch.Tensor()
         self._A6_r = torch.Tensor()
         self._A6_c = torch.Tensor()
-        # self.ident = _ident_like(A)
-        # self.structure = structure
+   
 
     @property
     def A2_r(self):
@@ -32,26 +31,22 @@ class _ExpmPadeHelper(object):
 
     @property
     def A4_r(self):
-      # if self._A4 is None:
         self._A4_r = torch.mm(self.A2_r, self.A2_r) - torch.mm(self.A2_c, self.A2_c)
         return self._A4_r
     
     @property
     def A4_c(self):
-      # if self._A4 is None:
         self._A4_c = torch.mm(self.A2_r, self.A2_c) + torch.mm(self.A2_c, self.A2_r)
         return self._A4_c
 
 
     @property
     def A6_r(self):
-      # if self._A6 is None:
         self._A6_r = torch.mm(self.A2_r, self.A4_r) - torch.mm(self.A2_c, self.A4_c)
         return self._A6_r
     
     @property
     def A6_c(self):
-      # if self._A6 is None:
         self._A6_c = torch.mm(self.A2_c, self.A4_r) + torch.mm(self.A2_r, self.A4_c)
         return self._A6_c
     
@@ -62,13 +57,11 @@ class _ExpmPadeHelper(object):
 
     def pade13_scaled(self, s):
         # s should have a float dtype for calculation of 2**-s
-
         s = s.float()
         b = torch.Tensor([64764752532480000., 32382376266240000., 7771770303897600.,
                 1187353796428800., 129060195264000., 10559470521600.,
                 670442572800., 33522128640., 1323241920., 40840800., 960960.,
                 16380., 182., 1.]).to(device)
-         ## Is the precision maintained??????????????
 
 
         B_r = self.A_r * 2**-s
@@ -121,11 +114,6 @@ def _solve_P_Q(U_r,U_c,V_r, V_c, structure=None):
     P_c = U_c + V_c
     Q_c = -U_c + V_c
 
-
-    # if structure is None:
-    #     return solve(Q, P)
-    # elif structure == UPPER_TRIANGULAR:
-    #P =N Q =D
     Q_up = torch.cat((Q_r, -Q_c), dim = 1)
     Q_down = torch.cat((Q_c, Q_r), dim = 1)
     Q = torch.cat((Q_up, Q_down), dim = 0)
@@ -144,9 +132,7 @@ def _solve_P_Q(U_r,U_c,V_r, V_c, structure=None):
 def MatrixExp(A_r, A_c):
 
   s_np = max(int(np.ceil(np.log2(2 / 4.25))), 0)
-  s =  torch.tensor([s_np]).to(device) #, dtype = float32
-
-  ## Eliminated the whole criterion of using exact one norm
+  s =  torch.tensor([s_np]).to(device) 
 
   h = _ExpmPadeHelper(A_r, A_c)
   U_r,U_c,V_r, V_c = h.pade13_scaled(s)
@@ -160,6 +146,5 @@ def MatrixExp(A_r, A_c):
       comp = torch.mm(X_r, X_c) + torch.mm(X_c, X_r)
       X_r = real
       X_c = comp
-      # X = torch.mm(X,X)
 
   return X_r, X_c
